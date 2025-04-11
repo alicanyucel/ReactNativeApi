@@ -4,10 +4,18 @@ using ReactNativeApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Swagger servisini ekle
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()  
+              .AllowAnyMethod();  
+    });
+});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
 
@@ -18,6 +26,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors("AllowAll");
 
 #region Table 1 
 app.MapPost("/api/tableone", async (TableOne input, AppDbContext db) =>
